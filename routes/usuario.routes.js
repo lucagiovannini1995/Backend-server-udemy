@@ -13,7 +13,12 @@ var Usuario = require('../models/usuario');
 //===========================
 rout.get('/',(req, res, next) =>{
   
-    var usu = Usuario.find({},'nombre email img role password')
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
+
+    Usuario.find({},'nombre email img role password')
+    .skip(desde)
+    .limit(5)
     .exec(
     (err, usu) => {
 
@@ -26,12 +31,15 @@ rout.get('/',(req, res, next) =>{
         }
 
 
-        
-
-        res.status(200).json({
-            ok: true,
-            usuarios: usu
+        Usuario.count({},(err, contador)=>{
+            res.status(200).json({
+                ok: true,
+                usuarios: usu,
+                total:contador
+            });
         });
+
+       
     });
 /*
     usuario.find()
